@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Doctor;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\User;
+use App\WorkDay;
 
-class DoctorController extends Controller
+class ScheduleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +15,8 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        $doctors = User::all();
-        return view('doctors.index', compact('doctors'));
+        $days = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'];
+        return view('schedule', compact('days'));
     }
 
     /**
@@ -25,7 +26,7 @@ class DoctorController extends Controller
      */
     public function create()
     {
-        return view('doctors.create');
+        //
     }
 
     /**
@@ -36,7 +37,31 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //ddd($request->all());
+        $active = $request->input('active') ? : [];
+        $morning_start = $request->input('morning_start');
+        $morning_end = $request->input('morning_end');
+        $afternoon_start = $request->input('afternoon_start');
+        $afternoon_end = $request->input('afternoon_end');
+
+        for ($i=0; $i < 7; $i++) {
+            $schedule = WorkDay::updateOrCreate(
+                [
+                    'day' => $i,
+                    'user_id' => auth()->user()->id,
+                ],
+                [
+                    'active' => in_array($i, $active),
+                    'morning_start' => $morning_start[$i],
+                    'morning_end' => $morning_end[$i],
+                    'afternoon_start' => $afternoon_start[$i],
+                    'afternoon_end' => $afternoon_end[$i],
+                ]
+            );
+        }
+
+        return back();
+
     }
 
     /**
@@ -58,7 +83,7 @@ class DoctorController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('schedule');
     }
 
     /**

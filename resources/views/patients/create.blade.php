@@ -7,18 +7,18 @@
             <div class="card-header border-0">
                <div class="row align-items-center">
                   <div class="col">
-                     <h3 class="mb-0">Nuevo Médico</h3>
+                     <h3 class="mb-0">Nuevo Paciente</h3>
                   </div>
                   <div class="col text-right">
-                     <a href="{{ url('/doctor') }}" class="btn btn-sm btn-outline-default">Cancelar y Volver</a>
+                     <a href="{{ url('/patient') }}" class="btn btn-sm btn-outline-default">Cancelar y Volver</a>
                   </div>
                </div>
             </div>
             <div class="card-body">
-                <form action="{{ url('/doctor') }}" method="POST">
+                <form action="{{ url('/patient') }}" method="POST">
                     @csrf
                     <div class="form-group">
-                        <label for="nombre" class="form-control-label">Nombre del Médico</label>
+                        <label for="nombre" class="form-control-label">Nombre del Paciente</label>
                         <input class="form-control" type="text" value="{{ old('name') }}" id="nombre" name="name" required>
                         @error('name')
                             <div class="alert alert-danger" role="alert">
@@ -38,11 +38,7 @@
                     <div class="form-group">
                         <label for="cedula" class="form-control-label">Cedula</label>
                         <input class="form-control" type="text" value="{{ old('cedula') }}" id="cedula" name="cedula">
-                        @error('cedula')
-                            <div class="alert alert-danger" role="alert">
-                                <strong>Peligro!</strong> {{ $message }}
-                            </div>
-                        @enderror
+
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-control-label">Dirección</label>
