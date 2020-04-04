@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Specialty;
 
 use App\Http\Controllers\Controller;
 
@@ -27,7 +28,8 @@ class DoctorController extends Controller
      */
     public function create()
     {
-        return view('doctors.create');
+        $specialties = Specialty::all();
+        return view('doctors.create', compact('specialties'));
     }
 
     /**
@@ -38,6 +40,7 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
+        //ddd($request->all());
         $rules = [
             'name' => 'required|min:3',
             'email' => 'required|email',
@@ -53,13 +56,15 @@ class DoctorController extends Controller
         $doctor->address = $request->get('address');
         $doctor->phone = $request->get('phone');
         $doctor->save(); */
-        User::create(
+        $user = User::create(
             $request->only('name','email','cedula','address','phone')
             + [
                 'role' => 'doctor',
                 'password' => bcrypt($request->get('password'))
             ]
         );
+
+        $user->specialties()->attach($request->input('specialties'));
 
         $notification = 'El médico se ha registrado correctamente';
         return redirect('/doctor')->with(compact('notification'));
@@ -85,7 +90,9 @@ class DoctorController extends Controller
     public function edit($id)
     {
         $doctor = User::doctor()->findOrFail($id);
-        return view('doctors.edit', compact('doctor'));
+        $specialties = Specialty::all();
+        $specialties_ids = $doctor->specialties()->pluck('specialties.id');
+        return view('doctors.edit', compact('doctor','specialties','specialties_ids'));
     }
 
     /**
@@ -120,6 +127,8 @@ class DoctorController extends Controller
         }
         $user->fill($data);
         $user->save();
+
+        $user->specialties()->sync($request->input('specialties'));
 
         $notification = 'El médico se ha actualizado correctamente';
         return redirect('/doctor')->with(compact('notification'));

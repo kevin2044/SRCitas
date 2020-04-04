@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Doctor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\WorkDay;
+use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
+    private $days = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'];
     /**
      * Display a listing of the resource.
      *
@@ -15,8 +17,23 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $days = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'];
-        return view('schedule', compact('days'));
+        $workdays = WorkDay::where('user_id', auth()->user()->id)->get();
+        if(count($workdays) > 0){
+            $workdays->map(function ($workday){
+                $workday->morning_start = (new Carbon($workday->morning_start))->format('g:i A');
+                $workday->morning_end = (new Carbon($workday->morning_end))->format('g:i A');
+                $workday->afternoon_start = (new Carbon($workday->afternoon_start))->format('g:i A');
+                $workday->afternoon_end = (new Carbon($workday->afternoon_end))->format('g:i A');
+                return $workday;
+            });
+        }else{
+            $workdays = collect();
+            for ($i=0; $i < 7; $i++) {
+                $workdays->push(new WorkDay);
+            }
+        }
+        $days = $this->days;
+        return view('schedule', compact('days', 'workdays'));
     }
 
     /**
@@ -44,7 +61,14 @@ class ScheduleController extends Controller
         $afternoon_start = $request->input('afternoon_start');
         $afternoon_end = $request->input('afternoon_end');
 
+        $errors = [];
         for ($i=0; $i < 7; $i++) {
+            if($morning_start[$i] > $morning_end[$i]){
+                $errors [] = "Las horas del turno de la mañana son inconsistentes para el día ".$this->days[$i].".";
+            }
+            if($afternoon_start[$i] > $afternoon_end[$i]){
+                $errors [] = "Las horas del turno de la tarde son inconsistentes para el día ".$this->days[$i].".";
+            }
             $schedule = WorkDay::updateOrCreate(
                 [
                     'day' => $i,
@@ -59,9 +83,12 @@ class ScheduleController extends Controller
                 ]
             );
         }
+        if(count($errors) > 0){
+            return back()->with(compact('errors'));
+        }
 
-        return back();
-
+        $notifications = 'Los cambios se han guardado correctamente.';
+        return back()->with(compact('notifications'));
     }
 
     /**

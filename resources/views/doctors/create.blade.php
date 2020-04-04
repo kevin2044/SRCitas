@@ -71,6 +71,19 @@
                             </div>
                         @enderror
                     </div>
+                    <div class="form-group">
+                        <label for="specialties" class="form-control-label">Especialidad</label>
+                        <select name="specialties[]" id="specialties" class="form-control selectpicker" data-style="btn-secondary" multiple title="Seleccione una o varias opciones">
+                            @foreach ($specialties as $specialty)
+                                <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('specialties')
+                            <div class="alert alert-danger" role="alert">
+                                <strong>Peligro!</strong> {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
                     <button type="submit" class="btn btn-outline-primary">Guardar</button>
                 </form>
             </div>
@@ -78,3 +91,11 @@
     </div>
 </div>
 @endsection
+@push('styles')
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+@endpush
+@push('scripts')
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+@endpush
