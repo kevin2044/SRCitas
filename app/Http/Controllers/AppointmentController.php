@@ -6,11 +6,26 @@ use Illuminate\Http\Request;
 use App\Interfaces\ScheduleServiceInterface;
 use App\Specialty;
 use App\Appointment;
+use App\CancelledAppointment;
 use Carbon\Carbon;
 use Validator;
 
 class AppointmentController extends Controller
 {
+
+    public function index(){
+
+        // patinet
+
+        // doctor
+
+        //admin -> all
+        $pendingAppointments = Appointment::where('status', 'Reservada')->where('patient_id', auth()->user()->id)->paginate('10');
+        $confirmedAppointments = Appointment::where('status', 'Confirmada')->where('patient_id', auth()->user()->id)->paginate('10');
+        $oldAppointments = Appointment::whereIn('status', ['Atendida','Cancelada'])->where('patient_id', auth()->user()->id)->paginate('10');
+        return view('appointments.index', compact('pendingAppointments', 'confirmedAppointments','oldAppointments'));
+    }
+
     public function create(ScheduleServiceInterface $scheduleService){
         $specialties = Specialty::all();
         $specialtyId = old('specialty_id');
@@ -77,5 +92,28 @@ class AppointmentController extends Controller
         Appointment::create($data);
         $notification = "La cita se ha registrado correctamente";
         return back()->with(compact('notification'));
+    }
+    public function showCancelForm(Appointment $appointment){
+        if($appointment->status == 'Confirmada'){
+            return view('appointments.cancel', compact('appointment'));
+        }else{
+            return redirect('/appointments');
+        }
+    }
+
+    public function postCancel(Appointment $appointment, Request $request){
+        if($request->has('justification')){
+            $cancellation = new CancelledAppointment();
+            $cancellation->justification = $request->input('justification');
+            $cancellation->cancelled_by = auth()->user()->id;
+            // $cancellation->appointment_id = ;
+            // $cancellation->save();
+            $appointment->cancellation()->save($cancellation);
+        }
+        $appointment->status = 'Cancelada';
+        $appointment->save();
+
+        $notification = "La cita se ha cancelado correctamente.";
+        return redirect('/appointments')->with(compact('notification'));
     }
 }
