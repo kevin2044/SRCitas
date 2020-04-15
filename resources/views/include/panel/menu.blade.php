@@ -28,6 +28,12 @@
                 <span class="nav-link-text">Pacientes</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url('/appointments') }}">
+                <i class="ni ni-time-alarm text-default"></i>
+                <span class="nav-link-text">Citas Médicas</span>
+            </a>
+        </li>
     @elseif (auth()->user()->role == 'doctor')
         <li class="nav-item">
             <a class="nav-link active" href="{{ url('/schedule') }}">
@@ -36,7 +42,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ url('/specialty') }}">
+            <a class="nav-link" href="{{ url('/appointments') }}">
                 <i class="ni ni-time-alarm text-orange"></i>
                 <span class="nav-link-text">Mis citas</span>
             </a>
@@ -66,7 +72,7 @@
          onclick="event.preventDefault();
          document.getElementById('logout-form').submit();">
          <i class="ni ni-key-25 text-info"></i>
-         <span class="nav-link-text">Cerrar Sesion</span>
+         <span class="nav-link-text">Cerrar Sesión</span>
          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                @csrf
          </form>

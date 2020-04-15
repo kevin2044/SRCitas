@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    //return view('welcome');
+    return redirect('/login');
 });
 
 Auth::routes();
@@ -54,11 +55,13 @@ Route::middleware(['auth', 'doctor'])->namespace('Doctor')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/appointments', 'AppointmentController@index');
+    Route::get('/appointments/{appointment}', 'AppointmentController@show');
     Route::get('/appointments/create', 'AppointmentController@create');
     Route::post('/appointments', 'AppointmentController@store');
     Route::post('/appointments/{appointment}/cancel', 'AppointmentController@postCancel');
     Route::get('/appointments/{appointment}/cancel', 'AppointmentController@showCancelForm');
-    Route::get('/appointments', 'AppointmentController@index');
+    Route::post('/appointments/{appointment}/confirm', 'AppointmentController@postConfirm');
 
     //JSON
     Route::get('/specialties/{specialty}/doctors', 'Api\SpecialtyController@doctors');

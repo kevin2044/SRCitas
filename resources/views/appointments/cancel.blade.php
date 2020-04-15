@@ -19,7 +19,15 @@
                 </div>
             @endif
             <div class="card-body">
-                <p>Estás a punto de cancelar tu cita reservada para: {{ $appointment->doctor->name }} (especialidad {{ $appointment->specialty->name }}) para el día {{ $appointment->scheduled_date->format('d-m-Y') }}</p>
+                @if ($role == 'patient')
+                    <p>Estás a punto de cancelar tu cita reservada con el médico: {{ $appointment->doctor->name }} (especialidad {{ $appointment->specialty->name }}) para el día {{ $appointment->scheduled_date->format('d-m-Y') }}</p>
+                @elseif($role == 'doctor')
+                    <p>Estás a punto de cancelar tu cita reservada con el paciente: {{ $appointment->patient->name }} (especialidad {{ $appointment->specialty->name }}) para el día {{ $appointment->scheduled_date->format('d-m-Y') }} (hora {{ $appointment->scheduled_time_12 }})</p>
+                @else
+                    <p>Estás a punto de cancelar la cita reservada por el paciente {{ $appointment->patient->name }} para el médico {{ $appointment->doctor->name }} (especialidad {{ $appointment->specialty->name }}) para el día {{ $appointment->scheduled_date->format('d-m-Y') }} (hora {{ $appointment->scheduled_time_12 }})</p>
+                @endif
+
+
                 <form action="{{ url('/appointments/'.$appointment->id.'/cancel') }}" method="POST">
                     @csrf
                     <div class="form-group">
