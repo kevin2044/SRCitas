@@ -3,7 +3,7 @@
 namespace App\Services;
 use App\Interfaces\ScheduleServiceInterface;
 
-use App\Workday;
+use App\WorkDay;
 use App\Appointment;
 use Carbon\Carbon;
 
