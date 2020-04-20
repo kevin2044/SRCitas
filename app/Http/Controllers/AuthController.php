@@ -28,6 +28,7 @@ class AuthController extends Controller {
     }
     public function login(Request $request) {
         $input = $request->only('email', 'password');
+        $user = User::where('email', $input['email'])->get();
         $jwt_token = null;
         if (!$jwt_token = JWTAuth::attempt($input)) {
             return response()->json([
@@ -38,6 +39,7 @@ class AuthController extends Controller {
         return response()->json([
             'status' => 'ok',
             'token' => $jwt_token,
+            'user' => $user,
         ]);
     }
     public function logout(Request $request) {
